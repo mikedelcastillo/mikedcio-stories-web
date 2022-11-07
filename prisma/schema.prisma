@@ -1,11 +1,111 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+enum StoryPostContentType {
+  MEDIA
+  LINK
+  GROUP
+}
+
+enum StoryPostContentDisplayMethod {
+  CROP
+  CONTAIN
+}
+
+model StoryPost {
+  id      String @id
+  caption String
+
+  groups StoryPostGroup[]
+  tags   StoryPostTag[]
+
+  contentType StoryPostContentType
+
+  // Link type
+  contentLink String?
+
+  // Media type
+  contentMediaId String?
+  contentMedia   Media?  @relation(fields: [contentMediaId], references: [id])
+  contentMediaDisplay StoryPostContentDisplayMethod
+
+  // Group type
+  contentGroupId String?
+  contentGroup   StoryGroup? @relation("storyContentGroup", fields: [contentGroupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model StoryPostTag {
+  id      String    @id
+  story   StoryPost @relation(fields: [storyId], references: [id])
+  tag     StoryTags @relation(fields: [tagId], references: [id])
+  storyId String
+  tagId   String
+}
+
+model StoryTags {
+  id          String         @id
+  title       String
+  description String
+  stories     StoryPostTag[]
+}
+
+model StoryPostGroup {
+  id      String     @id
+  story   StoryPost  @relation(fields: [storyId], references: [id])
+  group   StoryGroup @relation(fields: [groupId], references: [id])
+  storyId String
+  groupId String
+}
+
+model StoryGroup {
+  id String @id
+
+  title       String
+  description String
+
+  stories         StoryPostGroup[]
+  storyReferences StoryPost[]      @relation("storyContentGroup")
+}
+
+enum MediaType {
+  VIDEO
+  PHOTO
+}
+
+enum MediaVariation {
+  SOURCE // The untouched file
+  THUMBNAIL // Small photo for thumbnail
+  LQ // Highly compressed version of source
+  HQ // Slightly compressed version of source
+}
+
+model Media {
+  id       String    @id
+  filename String
+  ext      String
+  type     MediaType
+
+  storyReferences StoryPost[]
+
+  variation  MediaVariation
+  variations Media[]        @relation("MediaSource")
+  source     Media?         @relation("MediaSource", fields: [sourceId], references: [id])
+  sourceId   String?
+
+  width  Int   @default(0)
+  height Int   @default(0)
+  length Float @default(0)
+  size   Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

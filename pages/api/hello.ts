@@ -1,13 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next"
+import { ADMIN_TOKEN } from "../../lib/env"
+import { middlewareChain, validateAdmin, validateRequest } from "../../lib/middlewares"
+import * as yup from "yup"
 
-type Data = {
-  name: string
-}
-
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  res.status(200).json({ name: 'John Doe' })
-}
+export default middlewareChain(
+    // validateRequest("query", {
+    //     code: yup.string(),
+    // }),
+    validateAdmin,
+    async (req, res) => {
+        res.json("hello")
+    },
+)
