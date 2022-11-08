@@ -19,7 +19,9 @@ enum StoryPostContentDisplayMethod {
 }
 
 model StoryPost {
-  id      String @id
+  id String @id
+
+  title   String
   caption String
 
   groups StoryPostGroup[]
@@ -31,8 +33,8 @@ model StoryPost {
   contentLink String?
 
   // Media type
-  contentMediaId String?
-  contentMedia   Media?  @relation(fields: [contentMediaId], references: [id])
+  contentMediaId      String?
+  contentMedia        Media?                        @relation(fields: [contentMediaId], references: [id])
   contentMediaDisplay StoryPostContentDisplayMethod
 
   // Group type
