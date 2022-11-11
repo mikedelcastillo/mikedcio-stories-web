@@ -29,9 +29,9 @@ async function post(req: NextApiRequest, res: NextApiResponse){
         type: yup.string().required(),
 
         source: yup.string().required(),
-        thumb: yup.string(),
-        lq: yup.string(),
-        hq: yup.string(),
+        thumb: yup.string().nullable(true),
+        lq: yup.string().nullable(true),
+        hq: yup.string().nullable(true),
 
         width: yup.number(),
         height: yup.number(),
