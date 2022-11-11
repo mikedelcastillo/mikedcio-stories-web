@@ -83,31 +83,21 @@ enum MediaType {
   PHOTO
 }
 
-enum MediaVariation {
-  SOURCE // The untouched file
-  THUMBNAIL // Small photo for thumbnail
-  LQ // Highly compressed version of source
-  HQ // Slightly compressed version of source
-}
-
 model Media {
-  id       String    @id
-  filename String
-  ext      String
-  type     MediaType
+  id   String    @id
+  type MediaType
 
-  storyReferences StoryPost[]
+  source String
+  thumb  String?
+  lq     String?
+  hq     String?
 
-  variation  MediaVariation
-  variations Media[]        @relation("MediaSource")
-  source     Media?         @relation("MediaSource", fields: [sourceId], references: [id])
-  sourceId   String?
-
+  // Describes the source
   width  Int   @default(0)
   height Int   @default(0)
   length Float @default(0)
-  size   Float @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now())
+  StoryPost StoryPost[]
 }
